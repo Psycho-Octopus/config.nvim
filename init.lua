@@ -1,33 +1,7 @@
-require("key")
-require("set")
-require("yank")
-
--- Bootstrap lazy
-local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
-  local lazyrepo = "https://github.com/folke/lazy.nvim.git"
-  local out = vim.fn.system({ "git", "clone", "--filter=blob:none", "--branch=stable", lazyrepo, lazypath })
-  if vim.v.shell_error ~= 0 then
-    vim.api.nvim_echo({
-      { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out,                            "WarningMsg" },
-      { "\nPress any key to exit..." },
-    }, true, {})
-    vim.fn.getchar()
-    os.exit(1)
-  end
-end
-vim.opt.rtp:prepend(lazypath)
-
--- Lazy setup, import the plugins folder
-require("lazy").setup({
-  spec = {
-    { import = "plugins" },
-  },
-
-  -- automatically check for plugin updates
-  checker = { enabled = true },
-})
+require("ctaylor.set")
+require("ctaylor.yank")
+require("ctaylor.keymaps")
+require("ctaylor.lazy")
 
 require("autoclose").setup()
 
@@ -36,7 +10,7 @@ vim.diagnostic.config({
     spacing = 4,
     prefix = "◆", -- could be "●", "■", "▶", etc.
   },
-  signs = true,
+  signs = false,
   underline = true,
   update_in_insert = false,
   severity_sort = true,
@@ -57,60 +31,25 @@ require("mason-lspconfig").setup({
     automatic_installation = true,
 })
 
-require('lualine').setup {
-  options = {
-    icons_enabled = true,
-    theme = 'auto',
-    component_separators = '',
-    section_separators = '',
-    disabled_filetypes = {
-      statusline = {},
-      winbar = {},
-    },
-    ignore_focus = {},
-    always_divide_middle = true,
-    always_show_tabline = true,
-    globalstatus = false,
-    refresh = {
-      statusline = 1000,
-      tabline = 1000,
-      winbar = 1000,
-      refresh_time = 16, -- ~60fps
-      events = {
-        'WinEnter',
-        'BufEnter',
-        'BufWritePost',
-        'SessionLoadPost',
-        'FileChangedShellPost',
-        'VimResized',
-        'Filetype',
-        'CursorMoved',
-        'CursorMovedI',
-        'ModeChanged',
-      },
-    }
-  },
-  sections = {
-    lualine_a = {'mode'},
-    lualine_b = {'branch', 'diff'},
-    lualine_c = {'filename'},
-    lualine_x = {'diagnostics', 'lsp_status', 'filetype'},
-    lualine_y = {'progress'},
-    lualine_z = {'location'}
-  },
-  inactive_sections = {
-    lualine_a = {},
-    lualine_b = {},
-    lualine_c = {'filename'},
-    lualine_x = {'location'},
-    lualine_y = {},
-    lualine_z = {}
-  },
-  tabline = {},
-  winbar = {},
-  inactive_winbar = {},
-  extensions = {}
-}
+require('peek').setup({
+  auto_load = true,         -- whether to automatically load preview when
+                            -- entering another markdown buffer
+  close_on_bdelete = true,  -- close preview window on buffer delete
 
-vim.cmd("colorscheme tokyonight-night")
+  syntax = true,            -- enable syntax highlighting, affects performance
 
+  theme = 'dark',           -- 'dark' or 'light'
+
+  update_on_change = true,
+
+  app = {'firefox', '--new-window'},          -- 'webview', 'browser', string or a table of strings
+                            -- explained below
+
+  filetype = { 'markdown' },-- list of filetypes to recognize as markdown
+
+  -- relevant if update_on_change is true
+  throttle_at = 200000,     -- start throttling when file exceeds this
+                            -- amount of bytes in size
+  throttle_time = 'auto',   -- minimum amount of time in milliseconds
+                            -- that has to pass before starting new render
+})

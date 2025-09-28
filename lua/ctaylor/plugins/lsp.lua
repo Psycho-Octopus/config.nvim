@@ -31,6 +31,11 @@ return {
   },
   {
     "neovim/nvim-lspconfig",
+	opts = {
+		servers = {
+			dartls = {}
+		},
+	},
     dependencies = { "mason-lspconfig.nvim" },
     event = { "BufReadPre", "BufNewFile" },
     config = function()
@@ -44,7 +49,6 @@ return {
       vim.keymap.set('n', 'K', vim.lsp.buf.hover)
       vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action)
       vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename)
-      vim.keymap.set('n', '<leader>f', vim.lsp.buf.format)
     end,
   }
 }
