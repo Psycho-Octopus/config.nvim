@@ -1,0 +1,71 @@
+-- Custom status line
+-- format:
+-- left: MODE | name | modified?
+-- right: encoding | file type | total line numbers: line number: column
+
+vim.api.nvim_set_hl(0, "StatusLineModified", { fg = "#f38ba8", bold = true })
+vim.api.nvim_set_hl(0, "StatusLineMode", { fg = "#89b4fa", bold = true })
+vim.api.nvim_set_hl(0, "StatusLineFile", { fg = "#cdd6f4" })
+vim.api.nvim_set_hl(0, "StatusLineInfo", { fg = "#94e2d5" })
+
+local mode_map = {
+	n = "NORMAL",
+	i = "INSERT",
+	v = "VISUAL",
+	V = "V-LINE",
+	["\22"] = "V-BLOCK",
+	c = "COMMAND",
+	s = "SELECT",
+	S = "S-LINE",
+	["\19"] = "S-BLOCK",
+	R = "REPLACE",
+	r = "PROMPT",
+	["!"] = "SHELL",
+	t = "TERMINAL",
+}
+
+function IsModified()
+  if vim.bo.modified then
+    return "%#StatusLineModified# [+] %*"
+  else
+    return ""
+  end
+end
+
+function Mode()
+	local mode = vim.api.nvim_get_mode().mode
+	local mode_name = mode_map[mode] or "UNKNOWN"
+	return "%#StatusLineMode# " .. mode_name .. " %*"
+end
+
+function FileName()
+	local filename = vim.fn.expand('%:t')
+	if filename == "" then
+		filename = "[No Name]"
+	end
+
+	return "%#StatusLineFile# " .. filename .. " %*"
+end
+
+function StatusLine()
+  local left = string.format('%s | %s %s',
+    Mode(),
+    FileName(),
+    IsModified())
+
+  local encoding = vim.bo.fileencoding ~= "" and vim.bo.fileencoding or "utf-8"
+  local filetype = vim.bo.filetype ~= "" and vim.bo.filetype or "no ft"
+
+  local thing = string.format('%s | %s | %d:%d:%d ',
+    encoding,
+    filetype,
+    vim.api.nvim_buf_line_count(0),
+    vim.fn.line('.'),
+    vim.fn.col('.'))
+
+	local right =  "%#StatusLineInfo# " .. thing .. " %*"
+
+  return left .. '%=' .. right
+end
+
+vim.o.statusline = "%!v:lua.StatusLine()"
