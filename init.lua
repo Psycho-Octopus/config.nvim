@@ -1,7 +1,4 @@
-require("ctaylor.set")
-require("ctaylor.yank")
-require("ctaylor.keymaps")
-require("ctaylor.lazy")
+require("ctaylor")
 
 require("autoclose").setup()
 
