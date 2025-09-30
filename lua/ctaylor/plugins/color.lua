@@ -1,4 +1,4 @@
-function ColorRose(color)
+function Color(color)
 	color = color or "rose-pine"
 	vim.cmd.colorscheme(color)
 
@@ -6,30 +6,42 @@ function ColorRose(color)
 	vim.api.nvim_set_hl(0, "NormalFloat", {bg = "none"})
 end
 
-function ColorNeo(color)
-	color = color or "iceclimber"
-	vim.cmd.colorscheme(color)
-end
-
-function ColorTokyo(color)
-	color = color or "tokyonight-night"
-	vim.cmd.colorscheme(color)
-end
-
-
 return {
-{ "cdmill/neomodern.nvim",
+	{
+		"erikbackman/brightburn.vim",
+		enabled = false,
+		config = function()
+			vim.cmd.colorscheme("brightburn")
+		end
+    },
+{
+  'maxmx03/solarized.nvim',
+  lazy = false,
+  enabled = false,
+  priority = 1000,
+  ---@type solarized.config
+  opts = {},
+  config = function(_, opts)
+    vim.o.termguicolors = true
+    vim.o.background = 'light'
+    require('solarized').setup(opts)
+    vim.cmd.colorscheme 'solarized'
+  end,
+},
+{
+  "cdmill/neomodern.nvim",
   lazy = false,
   enabled = false,
   priority = 1000,
   config = function()
     require("neomodern").setup({
-		theme = 'roseprime'
+		theme = "roseprime"
     })
-	ColorNeo()
+	Color()
   end,
-  },
-  {
+},
+
+	{
 	'rose-pine/neovim',
 	name = 'rosepine',
 	enabled = true,
@@ -41,16 +53,7 @@ return {
 					transparency = true,
                 },
             })
-		ColorRose()
+		Color()
 	end
-},
-  {
-  "folke/tokyonight.nvim",
-  lazy = false,
-  enabled = false,
-  opts = {},
-  config = function()
-	  ColorTokyo()
-  end
-}
+	}
 }

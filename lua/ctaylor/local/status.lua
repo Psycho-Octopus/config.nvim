@@ -3,8 +3,14 @@
 -- left: MODE | name | modified?
 -- right: encoding | file type | total line numbers: line number: column
 
+-- module
+local M = {}
+
 vim.api.nvim_set_hl(0, "StatusLineModified", { fg = "#f38ba8", bold = true })
-vim.api.nvim_set_hl(0, "StatusLineMode", { fg = "#89b4fa", bold = true })
+vim.api.nvim_set_hl(0, "StatusLineNormal", { fg = "#89b4fa", bold = true })
+vim.api.nvim_set_hl(0, "StatusLineInsert", { fg = "#02ed6c", bold = true })
+vim.api.nvim_set_hl(0, "StatusLineCmd", { fg = "#e57d2d", bold = true })
+vim.api.nvim_set_hl(0, "StatusLineMode", { fg = "#e811f7", bold = true })
 vim.api.nvim_set_hl(0, "StatusLineFile", { fg = "#cdd6f4" })
 vim.api.nvim_set_hl(0, "StatusLineInfo", { fg = "#94e2d5" })
 
@@ -24,7 +30,7 @@ local mode_map = {
 	t = "TERMINAL",
 }
 
-function IsModified()
+IsModified = function()
   if vim.bo.modified then
     return "%#StatusLineModified# [+] %*"
   else
@@ -32,13 +38,20 @@ function IsModified()
   end
 end
 
-function Mode()
+Mode = function()
 	local mode = vim.api.nvim_get_mode().mode
 	local mode_name = mode_map[mode] or "UNKNOWN"
+	if mode_name == "NORMAL" then
+		return "%#StatusLineNormal# " .. mode_name .. " %*"
+	elseif mode_name == "INSERT" then
+		return "%#StatusLineInsert# " .. mode_name .. " %*"
+	elseif mode_name == "COMMAND" then
+		return "%#StatusLineCmd# " .. mode_name .. " %*"
+	end
 	return "%#StatusLineMode# " .. mode_name .. " %*"
 end
 
-function FileName()
+FileName = function()
 	local filename = vim.fn.expand('%:t')
 	if filename == "" then
 		filename = "[No Name]"
@@ -47,7 +60,7 @@ function FileName()
 	return "%#StatusLineFile# " .. filename .. " %*"
 end
 
-function StatusLine()
+StatusLine = function()
   local left = string.format('%s | %s %s',
     Mode(),
     FileName(),
@@ -68,4 +81,8 @@ function StatusLine()
   return left .. '%=' .. right
 end
 
-vim.o.statusline = "%!v:lua.StatusLine()"
+setup = function()
+	vim.o.statusline = "%!v:lua.StatusLine()"
+end
+
+return M
