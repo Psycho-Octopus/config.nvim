@@ -3,16 +3,13 @@
 -- left: MODE | name | modified?
 -- right: encoding | file type | total line numbers: line number: column
 
--- module
-local M = {}
-
 vim.api.nvim_set_hl(0, "StatusLineModified", { fg = "#f38ba8", bold = true })
 vim.api.nvim_set_hl(0, "StatusLineNormal", { fg = "#89b4fa", bold = true })
 vim.api.nvim_set_hl(0, "StatusLineInsert", { fg = "#02ed6c", bold = true })
 vim.api.nvim_set_hl(0, "StatusLineCmd", { fg = "#e57d2d", bold = true })
 vim.api.nvim_set_hl(0, "StatusLineMode", { fg = "#e811f7", bold = true })
 vim.api.nvim_set_hl(0, "StatusLineFile", { fg = "#cdd6f4" })
-vim.api.nvim_set_hl(0, "StatusLineInfo", { fg = "#94e2d5" })
+vim.api.nvim_set_hl(0, "StatusLineInfo", { fg = "#cdd6f4" })
 
 local mode_map = {
 	n = "NORMAL",
@@ -48,7 +45,7 @@ Mode = function()
 	elseif mode_name == "COMMAND" then
 		return "%#StatusLineCmd# " .. mode_name .. " %*"
 	end
-	return "%#StatusLineMode# " .. mode_name .. " %*"
+	return "%#StatusLineMode#" .. mode_name .. "%*"
 end
 
 FileName = function()
@@ -81,8 +78,6 @@ StatusLine = function()
   return left .. '%=' .. right
 end
 
-setup = function()
-	vim.o.statusline = "%!v:lua.StatusLine()"
+StatusSetup = function()
+	vim.opt.statusline = "%!v:lua.StatusLine()"
 end
-
-return M

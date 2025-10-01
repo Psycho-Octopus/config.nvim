@@ -5,7 +5,7 @@ require("ctaylor.lazy")
 
 require("ctaylor.local.status")
 
-setup()
+StatusSetup()
 
 vim.diagnostic.config({
   virtual_text = {
