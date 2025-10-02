@@ -81,3 +81,5 @@ end
 StatusSetup = function()
 	vim.opt.statusline = "%!v:lua.StatusLine()"
 end
+
+StatusSetup()

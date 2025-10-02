@@ -20,4 +20,3 @@ require("lazy").setup({
 	spec = "ctaylor.plugins",
 	change_detection = { notify = false }
 })
-

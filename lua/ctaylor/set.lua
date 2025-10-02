@@ -17,7 +17,7 @@ vim.opt.undofile = true
 vim.o.hlsearch = false
 vim.o.incsearch = true
 
-vim.o.cursorline = true
+vim.o.cursorline = false
 vim.o.scrolloff = 8
 
 vim.o.clipboard = 'unnamedplus'

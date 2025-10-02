@@ -1,54 +1,60 @@
 return {
-  {
-    "williamboman/mason.nvim",
-    config = function()
-      require("mason").setup({
-        ui = {
-          icons = {
-            package_installed = "✓",
-            package_pending = "➜",
-            package_uninstalled = "✗"
-          }
-        }
-      })
-    end,
-  },
-  {
-    "williamboman/mason-lspconfig.nvim",
-    dependencies = { "mason.nvim" },
-    config = function()
-      require("mason-lspconfig").setup({
-        ensure_installed = {
-          "lua_ls",
-          "ts_ls",
-          "html",
-          "cssls",
-          "clangd"
-        },
-        automatic_installation = true,
-      })
-    end,
-  },
-  {
     "neovim/nvim-lspconfig",
-	opts = {
-		servers = {
-			dartls = {}
-		},
-	},
-    dependencies = { "mason-lspconfig.nvim" },
-    event = { "BufReadPre", "BufNewFile" },
-    config = function()
-      local lspconfig = require("lspconfig")
-      local mason_lspconfig = require("mason-lspconfig")
+    dependencies = {
+        "williamboman/mason.nvim",
+        "williamboman/mason-lspconfig.nvim",
+        "hrsh7th/cmp-nvim-lsp",
+        "hrsh7th/cmp-buffer",
+        "hrsh7th/cmp-path",
+        "hrsh7th/cmp-cmdline",
+        "hrsh7th/nvim-cmp",
+        "L3MON4D3/LuaSnip",
+        "saadparwaiz1/cmp_luasnip",
+        "j-hui/fidget.nvim",
+    },
+	config = function()
+		local cmp = require('cmp')
+        local cmp_lsp = require("cmp_nvim_lsp")
 
-      -- Use mason-lspconfig's setup_handlers
+		require("fidget").setup({})
+        require("mason").setup()
 
-      -- Basic keybindings
-      vim.keymap.set('n', 'gd', vim.lsp.buf.definition)
-      vim.keymap.set('n', 'K', vim.lsp.buf.hover)
-      vim.keymap.set('n', '<leader>ca', vim.lsp.buf.code_action)
-      vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename)
-    end,
+		require("mason-lspconfig").setup({
+		  ensure_installed = {
+			  "lua_ls",
+			  "rust_analyzer",
+			  "gopls",
+			  "tailwindcss",
+		  },
+		  handlers = {
+			function(server_name)
+			  print("setting up ", server_name)
+			  require("lspconfig")[server_name].setup {}
+			end
+		  },
+		  })
+
+		local cmp_select = { behavior = cmp.SelectBehavior.Select }
+
+        cmp.setup({
+            snippet = {
+                expand = function(args)
+                    require('luasnip').lsp_expand(args.body) -- For `luasnip` users.
+                end,
+            },
+            mapping = cmp.mapping.preset.insert({
+                ['<C-p>'] = cmp.mapping.select_prev_item(cmp_select),
+                ['<C-n>'] = cmp.mapping.select_next_item(cmp_select),
+                ['<C-y>'] = cmp.mapping.confirm({ select = true }),
+                ["<C-Space>"] = cmp.mapping.complete(),
+            }),
+            sources = cmp.config.sources({
+                { name = "copilot", group_index = 2 },
+                { name = 'nvim_lsp' },
+                { name = 'luasnip' }, -- For luasnip users.
+            }, {
+                { name = 'buffer' },
+            })
+        })
+	end
   }
-}
