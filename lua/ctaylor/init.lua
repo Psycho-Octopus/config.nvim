@@ -17,25 +17,3 @@ vim.api.nvim_create_autocmd('TextYankPost', {
     vim.hl.on_yank()
   end,
 })
-
-autocmd('BufEnter', {
-    group = CtaylorGroup,
-    callback = function()
-        if vim.bo.filetype == "rust" then
-            pcall(vim.cmd.colorscheme, "tokyonight-night")
-        else
-            pcall(vim.cmd.colorscheme, "rose-pine")
-        end
-    end
-})
-
-vim.diagnostic.config({
-  virtual_text = {
-    spacing = 4,
-    prefix = "◆",
-  },
-  signs = false,
-  underline = true,
-  update_in_insert = false,
-  severity_sort = true,
-})

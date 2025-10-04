@@ -25,6 +25,7 @@ local mode_map = {
 	r = "PROMPT",
 	["!"] = "SHELL",
 	t = "TERMINAL",
+	d = "DELETE",
 }
 
 IsModified = function()
@@ -43,18 +44,29 @@ Mode = function()
 	elseif mode_name == "INSERT" then
 		return "%#StatusLineInsert# " .. mode_name .. " %*"
 	elseif mode_name == "COMMAND" then
-		return "%#StatusLineCmd# " .. mode_name .. " %*"
-	end
+		return "%#StatusLineCmd# " .. mode_name .. " %*" end
 	return "%#StatusLineMode#" .. mode_name .. "%*"
 end
 
 FileName = function()
-	local filename = vim.fn.expand('%:t')
-	if filename == "" then
-		filename = "[No Name]"
+	local filepath = vim.fn.expand('%:~:.')
+	if filepath == "" then
+		filepath = "[No Name]"
 	end
+	return "%#StatusLineFile# " .. filepath .. " %*"
+end
 
-	return "%#StatusLineFile# " .. filename .. " %*"
+function Pos()
+  local current = vim.fn.line('.')
+  local total = vim.fn.line('$')
+
+  if current == 1 then
+    return 'Top'
+  elseif current == total then
+    return 'Bot'
+  else
+    return string.format('%d%%', math.floor((current / total) * 100))
+  end
 end
 
 StatusLine = function()
@@ -66,10 +78,7 @@ StatusLine = function()
   local encoding = vim.bo.fileencoding ~= "" and vim.bo.fileencoding or "utf-8"
   local filetype = vim.bo.filetype ~= "" and vim.bo.filetype or "no ft"
 
-  local thing = string.format('%s | %s | %d:%d:%d ',
-    encoding,
-    filetype,
-    vim.api.nvim_buf_line_count(0),
+  local thing = string.format(' %d,%d ',
     vim.fn.line('.'),
     vim.fn.col('.'))
 
@@ -80,6 +89,7 @@ end
 
 StatusSetup = function()
 	vim.opt.statusline = "%!v:lua.StatusLine()"
+	vim.opt.laststatus = 3
 end
 
 StatusSetup()
