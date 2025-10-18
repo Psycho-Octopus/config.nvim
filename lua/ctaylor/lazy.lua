@@ -17,6 +17,11 @@ vim.opt.rtp:prepend(lazypath)
 
 -- Lazy setup, import the plugins folder
 require("lazy").setup({
-	spec = "ctaylor.plugins",
-	change_detection = { notify = false }
+	spec = "ctaylor.plugin",
+	change_detection = {
+	  notify = false
+	},
+    install = {
+	  missing = false,
+	},
 })
